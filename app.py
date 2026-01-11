@@ -70,7 +70,7 @@ with st.sidebar:
             ])
         
         if scale_mode == "Percentage of Image":
-            wm_scale = st.slider("Watermark Size (%)", 5, 100, 25, 1,
+            wm_scale = st.slider("Watermark Size (%)", 5, 100, 80, 1,
                                help="Size relative to the main image width")
         elif scale_mode == "Fixed Width (px)":
             wm_fixed_width = st.number_input("Width (pixels)", 50, 2000, 300, 10)
@@ -88,6 +88,7 @@ with st.sidebar:
         
         # Position Settings
         position_preset = st.selectbox("Position Preset", [
+            "Bottom Center (2/3)",
             "Bottom Right",
             "Bottom Left", 
             "Top Right",
@@ -98,7 +99,7 @@ with st.sidebar:
             "Left Center",
             "Right Center",
             "Custom Position"
-        ], help="Choose where to place your watermark")
+        ], help="Choose where to place your watermark", index=0)
         
         if position_preset == "Custom Position":
             col_x, col_y = st.columns(2)
@@ -191,6 +192,7 @@ def hex_to_rgba(hex_color, alpha=255):
 
 def get_position_coords(img_width, img_height, wm_width, wm_height, position, margin_x=30, margin_y=30):
     positions = {
+        "Bottom Center (2/3)": ((img_width - wm_width) // 2, int(img_height * 2/3) - wm_height // 2),
         "Bottom Right": (img_width - wm_width - margin_x, img_height - wm_height - margin_y),
         "Bottom Left": (margin_x, img_height - wm_height - margin_y),
         "Top Right": (img_width - wm_width - margin_x, margin_y),
@@ -201,7 +203,7 @@ def get_position_coords(img_width, img_height, wm_width, wm_height, position, ma
         "Left Center": (margin_x, (img_height - wm_height) // 2),
         "Right Center": (img_width - wm_width - margin_x, (img_height - wm_height) // 2)
     }
-    return positions.get(position, positions["Bottom Right"])
+    return positions.get(position, positions["Bottom Center (2/3)"])
 
 def apply_watermark(image, watermark_img, settings):
     img = image.copy()
